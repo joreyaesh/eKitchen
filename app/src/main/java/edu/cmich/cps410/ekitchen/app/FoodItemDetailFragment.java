@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -54,7 +55,11 @@ public class FoodItemDetailFragment extends Fragment {
 
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.fooditem_detail)).setText(mItem.content);
+            LinearLayout linearLayout = ((LinearLayout) rootView.findViewById(R.id.fooditem_detail));
+            // Set the name
+            ((TextView)linearLayout.findViewById(R.id.fooditem_detail_name)).setText(mItem.getName());
+            // Set the info
+            ((TextView)linearLayout.findViewById(R.id.fooditem_detail_info)).setText(mItem.getInfo());
         }
 
         return rootView;

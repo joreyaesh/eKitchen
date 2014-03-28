@@ -1,4 +1,4 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fooditem_detail"
     style="?android:attr/textAppearanceLarge"
@@ -6,4 +6,21 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:textIsSelectable="true"
-    tools:context="edu.cmich.cps410.ekitchen.app.FoodItemDetailFragment" />
+    android:orientation="vertical"
+    tools:context="edu.cmich.cps410.ekitchen.app.FoodItemDetailFragment" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="FoodItem Name"
+        android:id="@+id/fooditem_detail_name" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Additional Info"
+        android:id="@+id/fooditem_detail_info" />
+
+</LinearLayout>

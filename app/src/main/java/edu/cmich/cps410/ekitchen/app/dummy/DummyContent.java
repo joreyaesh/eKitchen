@@ -25,13 +25,12 @@ public class DummyContent {
 
     static {
         // Add sample items.
-        addItem(new DummyItem("1", "Bread"));
+        addItem(new DummyItem("1", "Bread", "Expires on 4/14/14"));
         addItem(new DummyItem("2", "Peanut Butter"));
         addItem(new DummyItem("3", "Jelly"));
-        addItem(new DummyItem("4", "Eggs"));
+        addItem(new DummyItem("4", "Eggs", "Expires on 4/14/18"));
         addItem(new DummyItem("5", "Flour"));
-        addItem(new DummyItem("6", "Eggs"));
-        addItem(new DummyItem("7", "Milk"));
+        addItem(new DummyItem("6", "Milk", "EXPIRED on 3/28/14"));
     }
 
     private static void addItem(DummyItem item) {
@@ -44,16 +43,25 @@ public class DummyContent {
      */
     public static class DummyItem {
         public String id;
-        public String content;
+        public String name;
+        public String info;
 
-        public DummyItem(String id, String content) {
+        public DummyItem(String id, String name) {
             this.id = id;
-            this.content = content;
+            this.name = name;
+        }
+
+        public DummyItem(String id, String name, String info) {
+            this.id = id;
+            this.name = name;
+            this.info = info;
         }
 
         @Override
-        public String toString() {
-            return content;
+        public String toString() { return name; }
+        public String getName() {
+            return name;
         }
+        public String getInfo() { return info; }
     }
 }
