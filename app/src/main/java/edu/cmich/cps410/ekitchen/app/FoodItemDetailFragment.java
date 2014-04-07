@@ -3,6 +3,9 @@ package edu.cmich.cps410.ekitchen.app;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -46,6 +49,9 @@ public class FoodItemDetailFragment extends Fragment {
             // to load content from a content provider.
             mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
         }
+
+        // Enable the options menu
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -63,5 +69,37 @@ public class FoodItemDetailFragment extends Fragment {
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.item_activity_actions, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_remove:
+                removeFoodItem();
+                return true;
+            case R.id.action_edit:
+                openEdit();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    /**
+     * Opens the edit {@link android.app.Activity Activity}.
+     */
+    private void openEdit() {
+        // TODO Implement this
+    }
+
+    private void removeFoodItem() {
+        // TODO Remove the food item from the list and database
     }
 }

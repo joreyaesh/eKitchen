@@ -33,7 +33,7 @@ public class DummyContent {
         addItem(new DummyItem("6", "Milk", "EXPIRED on 3/28/14"));
     }
 
-    private static void addItem(DummyItem item) {
+    public static void addItem(DummyItem item) {
         ITEMS.add(item);
         ITEM_MAP.put(item.id, item);
     }

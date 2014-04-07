@@ -3,5 +3,11 @@
 
     <string name="app_name">eKitchen</string>
     <string name="title_fooditem_detail">FoodItem Detail</string>
+    <string name="action_add">Add Item</string>
+    <string name="action_settings">Settings</string>
+    <string name="fooditem_name">FoodItem Name</string>
+    <string name="fooditem_additional_info">Additional Info</string>
+    <string name="action_remove">Remove Item</string>
+    <string name="action_edit">Edit Item</string>
 
 </resources>

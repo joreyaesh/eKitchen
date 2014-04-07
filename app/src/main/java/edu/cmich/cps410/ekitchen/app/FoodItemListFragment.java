@@ -3,6 +3,9 @@ package edu.cmich.cps410.ekitchen.app;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -77,6 +80,9 @@ public class FoodItemListFragment extends ListFragment {
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 DummyContent.ITEMS));
+
+        // Enable the options menu
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -148,5 +154,41 @@ public class FoodItemListFragment extends ListFragment {
         }
 
         mActivatedPosition = position;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main_activity_actions, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                openAddActivity();
+                return true;
+            case R.id.action_settings:
+                openSettings();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    /**
+     * Opens the settings activity.
+     */
+    private void openSettings() {
+        // TODO Either implement the settings screen or remove this option entirely
+    }
+
+    /**
+     * Opens the activity for adding FoodItems.
+     */
+    private void openAddActivity() {
+        // Open the activity
+        // TODO Implement this
     }
 }

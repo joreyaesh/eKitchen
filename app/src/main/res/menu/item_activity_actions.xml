@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <!-- Delete Item, should appear as action button -->
+    <item android:id="@+id/action_remove"
+        android:icon="@drawable/ic_menu_delete"
+        android:title="@string/action_remove"
+        android:showAsAction="ifRoom" />
+    <!-- Edit Item, should appear as action button -->
+    <item android:id="@+id/action_edit"
+        android:icon="@drawable/ic_menu_edit"
+        android:title="@string/action_edit"
+        android:showAsAction="ifRoom" />
+</menu>
