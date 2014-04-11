@@ -12,8 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-import edu.cmich.cps410.ekitchen.app.dummy.DummyContent;
-
 /**
  * A fragment representing a single FoodItem detail screen.
  * This fragment is either contained in a {@link FoodItemListActivity}
@@ -30,7 +28,7 @@ public class FoodItemDetailFragment extends Fragment {
     /**
      * The dummy content this fragment is presenting.
      */
-    private DummyContent.DummyItem mItem;
+    private ContentManager.FoodItem mItem;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -47,7 +45,7 @@ public class FoodItemDetailFragment extends Fragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            mItem = ContentManager.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
         }
 
         // Enable the options menu
@@ -64,8 +62,9 @@ public class FoodItemDetailFragment extends Fragment {
             LinearLayout linearLayout = ((LinearLayout) rootView.findViewById(R.id.fooditem_detail));
             // Set the name
             ((TextView)linearLayout.findViewById(R.id.fooditem_detail_name)).setText(mItem.getName());
-            // Set the info
-            ((TextView)linearLayout.findViewById(R.id.fooditem_detail_info)).setText(mItem.getInfo());
+            // Set the expiration date
+            ((TextView)linearLayout.findViewById(R.id.fooditem_detail_info))
+                    .setText("Expiration Date: " + mItem.getExpiration());
         }
 
         return rootView;
@@ -81,7 +80,7 @@ public class FoodItemDetailFragment extends Fragment {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_remove:
-                removeFoodItem();
+                removeFoodItem(mItem);
                 return true;
             case R.id.action_edit:
                 openEdit();
@@ -99,7 +98,10 @@ public class FoodItemDetailFragment extends Fragment {
         // TODO Implement this
     }
 
-    private void removeFoodItem() {
-        // TODO Remove the food item from the list and database
+    private void removeFoodItem(ContentManager.FoodItem foodItem) {
+        ContentManager contentManager = new ContentManager(getActivity());
+        contentManager.deleteItem(foodItem);
+        // Close self
+        getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
     }
 }

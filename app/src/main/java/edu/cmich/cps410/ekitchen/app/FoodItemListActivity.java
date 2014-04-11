@@ -1,10 +1,12 @@
 package edu.cmich.cps410.ekitchen.app;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.text.InputType;
+import android.widget.EditText;
 
 
 /**
@@ -50,8 +52,6 @@ public class FoodItemListActivity extends FragmentActivity
                     .findFragmentById(R.id.fooditem_list))
                     .setActivateOnItemClick(true);
         }
-
-        // TODO: If exposing deep links into your app, handle intents here.
     }
 
     /**
@@ -79,5 +79,44 @@ public class FoodItemListActivity extends FragmentActivity
             detailIntent.putExtra(FoodItemDetailFragment.ARG_ITEM_ID, id);
             startActivity(detailIntent);
         }
+    }
+
+    /**
+     * Pops up an {@link android.app.AlertDialog AlertDialog}, which prompts the user to input
+     * a {@link java.lang.String String} which will then be returned when the "OK" button is pressed.
+     * @param title The title to use for the
+     *              {@link android.app.AlertDialog.Builder#setTitle(CharSequence)} method.
+     * @return The {@link java.lang.String String} entered by the user,
+     *              or "" if the cancel button was pressed.
+     */
+    private String popupDialog(String title) {
+        final String[] response = {""};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title);
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                response[0] = input.getText().toString();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+
+        return response[0];
     }
 }

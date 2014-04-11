@@ -9,5 +9,8 @@
     <string name="fooditem_additional_info">Additional Info</string>
     <string name="action_remove">Remove Item</string>
     <string name="action_edit">Edit Item</string>
+    <string name="title_activity_add_food_item">AddFoodItemActivity</string>
+    <string name="item_expiration_date">Expiration Date</string>
+    <string name="item_name">Item Name</string>
 
 </resources>

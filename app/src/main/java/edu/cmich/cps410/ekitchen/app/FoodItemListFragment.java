@@ -10,8 +10,9 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-
-import edu.cmich.cps410.ekitchen.app.dummy.DummyContent;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 
 /**
  * A list fragment representing a list of FoodItems. This fragment
@@ -31,10 +32,14 @@ public class FoodItemListFragment extends ListFragment {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
     /**
-     * The fragment's current callback object, which is notified of list item
-     * clicks.
+     * The fragment's current callback object, which is notified of list item clicks.
      */
     private Callbacks mCallbacks = sDummyCallbacks;
+
+    /**
+     * The ArrayAdapter for the ListView.
+     */
+    private ArrayAdapter arrayAdapter;
 
     /**
      * The current activated item position. Only used on tablets.
@@ -74,15 +79,79 @@ public class FoodItemListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: replace with a real list adapter.
-        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
+        arrayAdapter = new ArrayAdapter<ContentManager.FoodItem>(
                 getActivity(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
-                DummyContent.ITEMS));
+                ContentManager.ITEMS);
 
-        // Enable the options menu
+        setListAdapter(arrayAdapter);
+
+        // Only read the file into ITEMS if it is empty.
+        // This is to avoid duplicating items when the screen rotates.
+        if(ContentManager.ITEMS.isEmpty()){
+            try
+            {
+                FileInputStream fis = getActivity().openFileInput(ContentManager.filename);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+                String line;
+                line = reader.readLine();
+                while (line != null){
+                    String name = line.split("\t")[0];
+                    String expiration = line.split("\t")[1];
+                    ContentManager.FoodItem foodItem = new ContentManager.FoodItem(name, expiration);
+                    ContentManager.ITEM_MAP.put(
+                            ContentManager.FoodItem.getUnusedId(),foodItem);
+                    ContentManager.ITEMS.add(foodItem);
+                    line = reader.readLine();
+                }
+                reader.close();
+                fis.close();
+            }
+            catch (Exception e){}
+        }
+
+
+        arrayAdapter.notifyDataSetChanged();
+
+        // Enable adding ActionBar items.
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        arrayAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(
+            Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main_activity_actions, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                addItem();
+                arrayAdapter.notifyDataSetChanged();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * Opens an {@link android.app.AlertDialog AlertDialog} for adding a new FoodItem.
+     * @see ContentManager#addItem()
+     */
+    private void addItem() {
+        ContentManager contentManager = new ContentManager(getActivity());
+        contentManager.addItem();
+        arrayAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -112,7 +181,7 @@ public class FoodItemListFragment extends ListFragment {
     public void onDetach() {
         super.onDetach();
 
-        // Reset the active callbacks interface to the dummy implementation.
+        // Reset the active callbacks interface to the correct implementation.
         mCallbacks = sDummyCallbacks;
     }
 
@@ -122,7 +191,7 @@ public class FoodItemListFragment extends ListFragment {
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+        mCallbacks.onItemSelected(ContentManager.ITEMS.get(position).id);
     }
 
     @Override
@@ -154,41 +223,5 @@ public class FoodItemListFragment extends ListFragment {
         }
 
         mActivatedPosition = position;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.main_activity_actions, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle presses on the action bar items
-        switch (item.getItemId()) {
-            case R.id.action_add:
-                openAddActivity();
-                return true;
-            case R.id.action_settings:
-                openSettings();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
-    }
-
-    /**
-     * Opens the settings activity.
-     */
-    private void openSettings() {
-        // TODO Either implement the settings screen or remove this option entirely
-    }
-
-    /**
-     * Opens the activity for adding FoodItems.
-     */
-    private void openAddActivity() {
-        // Open the activity
-        // TODO Implement this
     }
 }
