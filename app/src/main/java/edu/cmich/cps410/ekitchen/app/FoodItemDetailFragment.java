@@ -26,7 +26,7 @@ public class FoodItemDetailFragment extends Fragment {
     public static final String ARG_ITEM_ID = "item_id";
 
     /**
-     * The dummy content this fragment is presenting.
+     * The content this fragment is presenting.
      */
     private ContentManager.FoodItem mItem;
 
@@ -63,8 +63,11 @@ public class FoodItemDetailFragment extends Fragment {
             // Set the name
             ((TextView)linearLayout.findViewById(R.id.fooditem_detail_name)).setText(mItem.getName());
             // Set the expiration date
-            ((TextView)linearLayout.findViewById(R.id.fooditem_detail_info))
+            ((TextView) linearLayout.findViewById(R.id.fooditem_detail_expiration))
                     .setText("Expiration Date: " + mItem.getExpiration());
+            // Set the details
+            ((TextView) linearLayout.findViewById(R.id.fooditem_detail_details))
+                    .setText("Additional Details: " + mItem.getDetails());
         }
 
         return rootView;
@@ -83,7 +86,7 @@ public class FoodItemDetailFragment extends Fragment {
                 removeFoodItem(mItem);
                 return true;
             case R.id.action_edit:
-                openEdit();
+                openEdit(mItem);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -92,12 +95,23 @@ public class FoodItemDetailFragment extends Fragment {
     }
 
     /**
-     * Opens the edit {@link android.app.Activity Activity}.
+     * Opens the addItem {@link android.app.AlertDialog},
+     * but with values pre-filled with existing values.
      */
-    private void openEdit() {
-        // TODO Implement this
+    private void openEdit(ContentManager.FoodItem foodItem) {
+        ContentManager contentManager = new ContentManager(getActivity());
+        contentManager.addItem(foodItem);
+        // Close self
+        getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
     }
 
+    /**
+     * Deletes all instances of the provided
+     * {@link edu.cmich.cps410.ekitchen.app.ContentManager.FoodItem FoodItem}.
+     *
+     * @param foodItem The {@link edu.cmich.cps410.ekitchen.app.ContentManager.FoodItem FoodItem}
+     *                 to be deleted.
+     */
     private void removeFoodItem(ContentManager.FoodItem foodItem) {
         ContentManager contentManager = new ContentManager(getActivity());
         contentManager.deleteItem(foodItem);

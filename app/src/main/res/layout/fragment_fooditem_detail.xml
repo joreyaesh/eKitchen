@@ -4,23 +4,30 @@
     style="?android:attr/textAppearanceLarge"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="16dp"
     android:textIsSelectable="true"
-    android:orientation="vertical"
-    tools:context="edu.cmich.cps410.ekitchen.app.FoodItemDetailFragment" >
+    tools:context="edu.cmich.cps410.ekitchen.app.FoodItemDetailFragment">
 
     <TextView
+        android:id="@+id/fooditem_detail_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/fooditem_name"
-        android:id="@+id/fooditem_detail_name" />
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
+        android:id="@+id/fooditem_detail_expiration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/fooditem_expiration"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/fooditem_detail_details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="@string/fooditem_additional_info"
-        android:id="@+id/fooditem_detail_info" />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </LinearLayout>

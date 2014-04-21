@@ -24,7 +24,14 @@ import java.util.Map;
 public class ContentManager {
     
     public static String filename = "content.txt";
-    
+    /**
+     * An array of FoodItems.
+     */
+    public static List<FoodItem> ITEMS = new ArrayList<FoodItem>();
+    /**
+     * A map of FoodItems, by ID.
+     */
+    public static Map<String, FoodItem> ITEM_MAP = new HashMap<String, FoodItem>();
     private Context mContext = null;
 
     public ContentManager(Context mContext) {
@@ -32,27 +39,33 @@ public class ContentManager {
     }
 
     /**
-     * Prompts the user to add a item using an {@link android.app.AlertDialog}, 
-     * and then calls {@link #saveItemToFile(String, String)}
+     * Prompts the user to add a item using an {@link android.app.AlertDialog},
+     * and then calls {@link #saveItemToFile(String, String, String)}
      * to save the new item to content.txt.
-     * @see #saveItemToFile(String, String)
+     * @see #saveItemToFile(String, String, String)
      * @see #deleteItem(edu.cmich.cps410.ekitchen.app.ContentManager.FoodItem)
      */
-    public void addItem() {
+    public void addItem(final FoodItem edit_foodItem) {
+
         AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
 
         final LinearLayout layout = new LinearLayout(mContext);
         layout.setOrientation(LinearLayout.VERTICAL);
 
         final EditText nameBox = new EditText(mContext);
-//        nameBox.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+        if (edit_foodItem != null) nameBox.setText(edit_foodItem.getName());
         nameBox.setHint("Item Name");
         layout.addView(nameBox);
 
         final EditText expirationBox = new EditText(mContext);
-//        expirationBox.setInputType(InputType.TYPE_DATETIME_VARIATION_DATE);
+        if (edit_foodItem != null) expirationBox.setText(edit_foodItem.getExpiration());
         expirationBox.setHint("Expiration Date");
         layout.addView(expirationBox);
+
+        final EditText detailsBox = new EditText(mContext);
+        if (edit_foodItem != null) detailsBox.setText(edit_foodItem.getDetails());
+        detailsBox.setHint("More Info");
+        layout.addView(detailsBox);
 
         alert.setTitle("Add New Item");
 
@@ -61,16 +74,22 @@ public class ContentManager {
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String name = nameBox.getText().toString();
-                if(name == null || name.equals("")) name = "Undefined Name";
+                if (name == null || name.equals("")) name = "Undefined Name";
                 String expiration = expirationBox.getText().toString();
-                if(expiration == null || expiration.equals("")) expiration = "Undefined";
+                if (expiration == null || expiration.equals("")) expiration = "Undefined";
+                String details = detailsBox.getText().toString();
+                if (details == null || details.equals("")) details = "None";
 
+                // Delete the old version, if it was provided for editing
+                if (edit_foodItem != null) {
+                    deleteItem(edit_foodItem);
+                }
                 // Save the provided string as a new line in content.txt.
-                saveItemToFile(name, expiration);
+                saveItemToFile(name, expiration, details);
                 // Add the item to our list of items.
-                FoodItem foodItem = new FoodItem(name, expiration);
+                FoodItem foodItem = new FoodItem(name, expiration, details);
                 ITEMS.add(foodItem);
-                ITEM_MAP.put(FoodItem.getUnusedId(),foodItem);
+                ITEM_MAP.put(FoodItem.getUnusedId(), foodItem);
             }
         });
 
@@ -87,23 +106,23 @@ public class ContentManager {
      * Adds a line to the end of content.txt containing the name and expiration date given.
      * @param name The name of the item to add.
      * @param expiration The item's expiration date.
-     * @return True if the item was added, False otherwise
-     * @see #addItem()
+     * @param details Any additional details
+     * @return True if the item was added, False otherwise.
+     * @see #addItem(edu.cmich.cps410.ekitchen.app.ContentManager.FoodItem)
      */
-    private boolean saveItemToFile(String name, String expiration){
+    private boolean saveItemToFile(String name, String expiration, String details) {
         boolean success = true;
         try {
             FileOutputStream fos = mContext.openFileOutput(filename, Context.MODE_APPEND);
-            String item = name + "\t" + expiration;
+            String item = name + "\t" + expiration + "\t" + details;
             fos.write(item.getBytes());
             fos.write(System.getProperty("line.separator").getBytes());
             fos.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             success = false;
             toast("Error saving item");
         }
-        if(success) {
+        if (success) {
             toast("Item successfully saved");
         }
         return success;
@@ -115,9 +134,9 @@ public class ContentManager {
      * @param foodItem The {@link edu.cmich.cps410.ekitchen.app.ContentManager.FoodItem FoodItem} to delete
      * @return True if the item was deleted, False otherwise
      * @see #removeItemFromFile(int)
-     * @see #addItem()
+     * @see #addItem(edu.cmich.cps410.ekitchen.app.ContentManager.FoodItem)
      */
-    public boolean deleteItem(FoodItem foodItem){
+    public boolean deleteItem(FoodItem foodItem) {
         boolean found = false;
         int lineNumber = 1;
         try {
@@ -125,9 +144,10 @@ public class ContentManager {
             BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
             String line;
             line = reader.readLine();
-            while (line != null){
-                if((line.split("\t")[0].contains(foodItem.getName())
-                        && (line.split("\t")[1].contains(foodItem.getExpiration())))){
+            while (line != null) {
+                if (((line.split("\t")[0].contains(foodItem.getName()))
+                        && (line.split("\t")[1].contains(foodItem.getExpiration()))
+                        && (line.split("\t")[2]).contains(foodItem.getDetails()))) {
                     // Item was found.
                     found = true;
                     // Delete the line containing the item.
@@ -145,7 +165,7 @@ public class ContentManager {
         } catch (Exception e) {
             toast("Error deleting item");
         }
-        if(found){
+        if (found) {
             toast("Item successfully deleted");
         }
         return found;
@@ -153,6 +173,7 @@ public class ContentManager {
 
     /**
      * Removes the given line from content.txt.
+     *
      * @param lineNumber The line to delete from the file
      * @throws java.io.IOException If an error occurred when editing the file.
      * @see #deleteItem(edu.cmich.cps410.ekitchen.app.ContentManager.FoodItem)
@@ -178,12 +199,13 @@ public class ContentManager {
 
             br.close();
             bw.close();
-;
+            ;
             // Rename the new file to the old file's filename, overwriting the old file.
             File oldFile = mContext.getFileStreamPath(filename);
             File newFile = mContext.getFileStreamPath("tmp");
             newFile.renameTo(oldFile);
-        } catch (IOException e) {}
+        } catch (IOException e) {
+        }
 
     }
 
@@ -191,23 +213,10 @@ public class ContentManager {
      * Displays the given text as a toast.
      * @param text The text to display as a toast
      */
-    public void toast(String text){
+    public void toast(String text) {
         Toast toast = Toast.makeText(mContext, text, Toast.LENGTH_SHORT);
         toast.show();
     }
-
-
-
-
-    /**
-     * An array of FoodItems.
-     */
-    public static List<FoodItem> ITEMS = new ArrayList<FoodItem>();
-
-    /**
-     * A map of FoodItems, by ID.
-     */
-    public static Map<String, FoodItem> ITEM_MAP = new HashMap<String, FoodItem>();
 
     /**
      * This Object which represents any item of food entered into the app.
@@ -216,15 +225,21 @@ public class ContentManager {
         public String id;
         public String name;
         public String expiration;
+        public String details;
 
         public FoodItem(String name) {
-            this(name, "Unspecified");
+            this(name, "Unspecified", "None");
         }
 
         public FoodItem(String name, String expiration) {
+            this(name, expiration, "None");
+        }
+
+        public FoodItem(String name, String expiration, String details) {
             this.id = getUnusedId();
             this.name = name;
             this.expiration = expiration;
+            this.details = details;
         }
 
         /**
@@ -252,6 +267,10 @@ public class ContentManager {
         }
         public String getExpiration() {
             return expiration;
+        }
+
+        public String getDetails() {
+            return details;
         }
     }
 }

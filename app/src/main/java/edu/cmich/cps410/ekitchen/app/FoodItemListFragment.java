@@ -30,34 +30,6 @@ public class FoodItemListFragment extends ListFragment {
      * activated item position. Only used on tablets.
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
-
-    /**
-     * The fragment's current callback object, which is notified of list item clicks.
-     */
-    private Callbacks mCallbacks = sDummyCallbacks;
-
-    /**
-     * The ArrayAdapter for the ListView.
-     */
-    private ArrayAdapter arrayAdapter;
-
-    /**
-     * The current activated item position. Only used on tablets.
-     */
-    private int mActivatedPosition = ListView.INVALID_POSITION;
-
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
-    public interface Callbacks {
-        /**
-         * Callback for when an item has been selected.
-         */
-        public void onItemSelected(String id);
-    }
-
     /**
      * A dummy implementation of the {@link Callbacks} interface that does
      * nothing. Used only when this fragment is not attached to an activity.
@@ -67,6 +39,18 @@ public class FoodItemListFragment extends ListFragment {
         public void onItemSelected(String id) {
         }
     };
+    /**
+     * The fragment's current callback object, which is notified of list item clicks.
+     */
+    private Callbacks mCallbacks = sDummyCallbacks;
+    /**
+     * The ArrayAdapter for the ListView.
+     */
+    private ArrayAdapter arrayAdapter;
+    /**
+     * The current activated item position. Only used on tablets.
+     */
+    private int mActivatedPosition = ListView.INVALID_POSITION;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -89,26 +73,26 @@ public class FoodItemListFragment extends ListFragment {
 
         // Only read the file into ITEMS if it is empty.
         // This is to avoid duplicating items when the screen rotates.
-        if(ContentManager.ITEMS.isEmpty()){
-            try
-            {
+        if (ContentManager.ITEMS.isEmpty()) {
+            try {
                 FileInputStream fis = getActivity().openFileInput(ContentManager.filename);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
                 String line;
                 line = reader.readLine();
-                while (line != null){
+                while (line != null) {
                     String name = line.split("\t")[0];
                     String expiration = line.split("\t")[1];
-                    ContentManager.FoodItem foodItem = new ContentManager.FoodItem(name, expiration);
+                    String details = line.split("\t")[2];
+                    ContentManager.FoodItem foodItem = new ContentManager.FoodItem(name, expiration, details);
                     ContentManager.ITEM_MAP.put(
-                            ContentManager.FoodItem.getUnusedId(),foodItem);
+                            ContentManager.FoodItem.getUnusedId(), foodItem);
                     ContentManager.ITEMS.add(foodItem);
                     line = reader.readLine();
                 }
                 reader.close();
                 fis.close();
+            } catch (Exception e) {
             }
-            catch (Exception e){}
         }
 
 
@@ -146,11 +130,12 @@ public class FoodItemListFragment extends ListFragment {
 
     /**
      * Opens an {@link android.app.AlertDialog AlertDialog} for adding a new FoodItem.
-     * @see ContentManager#addItem()
+     *
+     * @see ContentManager#addItem(edu.cmich.cps410.ekitchen.app.ContentManager.FoodItem)
      */
     private void addItem() {
         ContentManager contentManager = new ContentManager(getActivity());
-        contentManager.addItem();
+        contentManager.addItem(null);
         arrayAdapter.notifyDataSetChanged();
     }
 
@@ -223,5 +208,17 @@ public class FoodItemListFragment extends ListFragment {
         }
 
         mActivatedPosition = position;
+    }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callbacks {
+        /**
+         * Callback for when an item has been selected.
+         */
+        public void onItemSelected(String id);
     }
 }
